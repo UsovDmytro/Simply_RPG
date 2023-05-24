@@ -114,8 +114,8 @@ def main():
         for person in second_hero_sequence:
             print(change_color(person['person'], 'yellow'))
         break
-    first_person = first_hero_sequence.pop()
-    second_person = second_hero_sequence.pop()
+    first_person = first_hero_sequence.pop(0)
+    second_person = second_hero_sequence.pop(0)
     while True:
         print('\n', 'Бой между ',
               change_color(first_person['person'], 'yellow'), '(первый игрок) и ',
@@ -131,12 +131,12 @@ def main():
             if len(second_hero_sequence) == 0:
                 print('\n', 'Первый игрок - ПОБЕДИЛ!!!')
                 return
-            second_person = second_hero_sequence.pop()
+            second_person = second_hero_sequence.pop(0)
         else:
             if len(first_hero_sequence) == 0:
                 print('\n', 'Второй игрок - ПОБЕДИЛ!!!')
                 return
-            first_person = first_hero_sequence.pop()
+            first_person = first_hero_sequence.pop(0)
 
 
 if __name__ == '__main__':
