@@ -27,7 +27,7 @@ colors_cmd = {
     'grey': '\033[37m',
     'purple': '\033[35m',
     'green': '\033[32m',
-    'defolt': '\033[0m'
+    'default': '\033[0m'
 }
 first_hero_sequence = []
 second_hero_sequence = []
@@ -35,7 +35,7 @@ speed = 1
 
 
 def change_color(text, color):
-    return colors_cmd[color] + text + colors_cmd['defolt']
+    return colors_cmd[color] + text + colors_cmd['default']
 
 
 def fight(first_person, second_person):
