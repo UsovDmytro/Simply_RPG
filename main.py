@@ -38,6 +38,19 @@ def change_color(text, color):
     return colors_cmd[color] + text + colors_cmd['default']
 
 
+def round_of_fight(attacking_player, attacking_person, defending_player, defending_person):
+    best_enemy = attacking_person['best_enemy'] == defending_person['person']
+    knocking = attacking_person['damage'] * (1.5 if best_enemy else 1)
+    print(attacking_player + '(' + change_color(attacking_person['person'], 'yellow') + ') наносит урон - ',
+          change_color(str(knocking), 'red'))
+    defending_person['HP'] -= knocking
+    if defending_person['HP'] <= 0:
+        print(defending_player + '(' + change_color(defending_person['person'], 'yellow') + ') убит')
+        return
+    print(defending_player + '(' + change_color(defending_person['person'], 'yellow') + '): HP - ',
+          change_color(str(defending_person['HP']), 'green'))
+
+
 def fight(first_person, second_person):
     first_kick = random.choice([True, False])
     print('Начало боя!',
@@ -45,34 +58,32 @@ def fight(first_person, second_person):
           ('первый игрок(' + change_color(first_person['person'], 'yellow') + ')') if first_kick else
           ('второй игрок(' + change_color(second_person['person'], 'yellow') + ')'), '\n'
           )
-    first_HP = first_person['HP']
-    second_HP = second_person['HP']
     while True:
         if first_kick:
-            best_enemy = first_person['best_enemy'] == second_person['person']
-            knocking = first_person['damage'] * (1.5 if best_enemy else 1)
-            print('Первый игрок(' + change_color(first_person['person'], 'yellow') + ') наносит урон - ',
-                  change_color(str(knocking), 'red'))
-            second_HP -= knocking
-            if second_HP <= 0:
-                print('Второй игрок(' + change_color(second_person['person'], 'yellow') + ') убит')
+            round_of_fight('Первый игрок', first_person, 'Второй игрок', second_person)
+            if second_person['HP'] <= 0:
                 return True
-            print('У второго игрока(' + change_color(second_person['person'], 'yellow') + ') осталось HP - ',
-                  change_color(str(second_HP), 'green'))
         else:
-            best_enemy = second_person['best_enemy'] == first_person['person']
-            knocking = second_person['damage'] * (1.5 if best_enemy else 1)
-            print('Второй игрок(' + change_color(second_person['person'], 'yellow') + ') наносит урон - ',
-                  change_color(str(knocking), 'red'))
-            first_HP -= knocking
-            if first_HP <= 0:
-                print('Первый игрок(' + change_color(first_person['person'], 'yellow') + ') убит')
+            round_of_fight('Второй игрок', second_person, 'Первый игрок', first_person)
+            if first_person['HP'] <= 0:
                 return False
-            print('У первого игрока(' + change_color(first_person['person'], 'yellow') + ') осталось HP - ',
-                  change_color(str(first_HP), 'green'))
         print('')
         first_kick = not first_kick
         time.sleep(speed)
+
+
+def choose_person(name):
+    while True:
+        player_input = input(name + ' - введи последовательность персонажей: ')
+        hero_sequence = player_input.split()
+        if len(set(hero_sequence) - {'1', '2', '3'}) > 0 or len(hero_sequence) != 5:
+            print('Некорректные данные! Повторите ввод: ')
+            continue
+        choosen_hero_sequence = [persons[int(i)-1].copy() for i in hero_sequence]
+        print('Вы выбрали такой порядок: ')
+        for person in choosen_hero_sequence:
+            print(change_color(person['person'], 'yellow'))
+        return choosen_hero_sequence
 
 
 def main():
@@ -91,29 +102,8 @@ def main():
           + change_color('mage', 'yellow') + ', 3 - '
           + change_color('archer', 'yellow') + ','
           '(Например: 1 1 2 1 3)', sep='\n')
-
-    while True:
-        first_player_input = input('Первый игрок - введи последовательность персонажей: ')
-        hero_sequence = [i for i in first_player_input.split(sep=' ') if i != '']
-        if len(set(hero_sequence) - {'1', '2', '3'}) > 0 or len(hero_sequence) != 5:
-            print('Некорректные данные! Повторите ввод: ')
-            continue
-        first_hero_sequence = [persons[int(i)-1] for i in hero_sequence]
-        print('Вы выбрали такой порядок: ')
-        for person in first_hero_sequence:
-            print(change_color(person['person'], 'yellow'))
-        break
-    while True:
-        second_player_input = input('Второй игрок - введи последовательность персонажей: ')
-        hero_sequence = [i for i in second_player_input.split(sep=' ') if i != '']
-        if len(set(hero_sequence) - {'1', '2', '3'}) > 0 or len(hero_sequence) != 5:
-            print('Некорректные данные! Повторите ввод: ')
-            continue
-        second_hero_sequence = [persons[int(i)-1] for i in hero_sequence]
-        print('Вы выбрали такой порядок: ')
-        for person in second_hero_sequence:
-            print(change_color(person['person'], 'yellow'))
-        break
+    first_hero_sequence = choose_person('Первый игрок')
+    second_hero_sequence = choose_person('Второй игрок')
     first_person = first_hero_sequence.pop(0)
     second_person = second_hero_sequence.pop(0)
     while True:
